@@ -25,16 +25,6 @@ private:
 	int get_score( Move * m);
 	
 };
-
-struct Node 
-{
-	Board board_state;
-	vector<Node> next_moves;
-	Node(Board b)
-    {
-        board_state = b;
-        next_moves = vector<Node *>();
-    }
     
 	/** @brief Inserts an integer into the subtree rooted at this node.
 

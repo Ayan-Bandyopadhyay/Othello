@@ -39,4 +39,28 @@ private:
 
     }
 };
+
+struct Node
+{
+ Board board_state;
+ vector<Node> next_moves;
+ Node(Board b)
+ {
+ board_state = b;
+ next_moves = vector<Node *>();
+ }
+
+ /** @brief Inserts an integer into the subtree rooted at this node.
+
+ Does not allow duplicate entries.
+
+ @return whether or not the entry was successfully inserted.
+
+ */
+ bool insert(Board b)
+ {
+ next_moves.push_back( Node(b));
+
+ }
+};
 #endif

@@ -42,25 +42,87 @@ private:
 
 struct Node
 {
- Board board_state;
- vector<Node> next_moves;
- Node(Board b)
- {
- board_state = b;
- next_moves = vector<Node *>();
- }
+	Board board_state;
+	int score;
+	vector<Node> next_moves;
+	Node(Board b)
+	{
+		score = -9999999;
+		board_state = b;
+		next_moves = vector<Node *>();
+	}
 
- /** @brief Inserts an integer into the subtree rooted at this node.
+	/** @brief Inserts an board into the subtree rooted at this node.
+	Does not allow duplicate entries.
+	@return whether or not the entry was successfully inserted.
+	*/
+	bool insert(Board b)
+	{
+		next_moves.push_back( Node(b));
+	}
+};
 
- Does not allow duplicate entries.
+class DecisionTree
+{
+private:
+    Node * root;
+public:
+    BinarySearchTree()
+    {
+        root = nullptr;
+    }
 
- @return whether or not the entry was successfully inserted.
+    /** @brief Inserts an board into this tree.
 
- */
- bool insert(Board b)
- {
- next_moves.push_back( Node(b));
+    Does not allow duplicate entries.
 
- }
+    @return whether or not the entry was successfully inserted.
+
+    */
+    bool insert(Board b)
+    {
+		if (root == nullptr)
+		{
+			root = new Node(b);
+		}
+        return root->insert(val);
+    }
+
+     /** @brief Finds an integer in this tree.
+
+    @return whether or not the entry exists in this tree.
+
+    */
+    void Deleter(Node * current)
+    {
+		if (current == nullptr)
+		{
+			return;
+		}
+		else
+		{
+			if( current->next_moves.size() == 0)
+			{
+				delete current;
+				return;
+			}
+			
+			vector<Node *> vec = vector<Node *>();
+			
+			for(int i = 0 ; i < current->next_moves.size(); i++)
+			{
+				vec.push_back( current->next_moves.size() );
+			}
+			
+			for(int i = 0 ; i < vec.size(); i++)
+			{
+				Deleter(vec[i]);
+			}
+		}
+	}
+    ~BinarySearchTree()
+    {
+		Deleter(root);
+	}
 };
 #endif

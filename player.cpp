@@ -26,6 +26,8 @@ Player::Player(Side side) {
      {
          opponent_side = BLACK;
      }
+     
+     
 }
 
 /*
@@ -60,8 +62,17 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
         new_board = board.copy();
         DecisionTree tree;
         tree.insert_root(*new_board);
+<<<<<<< HEAD
 
 
+=======
+		tree.generate_layer(player_side, tree.get_root());
+		for(unsigned int = 0; i < tree.get_root->next_moves.size(); i++)
+		{ 	
+			tree.generate_layer(opponent_side, tree.get_root->next_moves[i]);
+		}
+        
+>>>>>>> 177ff72b55c9f14f8a324567948bdafe0caf3c5c
 
 
     }

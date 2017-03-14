@@ -33,30 +33,31 @@ struct Node
     bool generate_next(Side player_side)
     {
         Board *new_board = board_state.copy();
-        if (next_moves.size() == 0)
-        {
-            Move *m;  
-            
-            for (int i = 0; i < 8; i++) 
-            {
-                for (int j = 0; j < 8; j++) 
-                {
-                    m = new Move(i, j);
-                    if (new_board->checkMove(m, player_side))
-                    {
-                        Board *b = new_board->copy();
-                        Node *node = new Node(*b);
-                        next_moves.push_back(node);
-                    }
-                    else
-                    {
-                        delete m;
-                    }
-                }
-            }
 
-        }
+		Move *m;  
+		
+		for (int i = 0; i < 8; i++) 
+		{
+			for (int j = 0; j < 8; j++) 
+			{
+				m = new Move(i, j);
+				if (new_board->checkMove(m, player_side))
+				{
+					
+					Board *b = new_board->copy();
+					b->doMove( m, player_side);
+					Node *node = new Node(*b);
+					next_moves.push_back(node);
+				}
+				else
+				{
+					delete m;
+				}
+			}
+		}
     }
+    
+    
 };
 
 class DecisionTree
@@ -64,6 +65,8 @@ class DecisionTree
 private:
     Node * root;
 public:
+	
+	
     DecisionTree()
     {
         root = nullptr;
@@ -76,6 +79,12 @@ public:
     @return whether or not the entry was successfully inserted.
 
     */
+    
+    Node * get_root()
+    {
+		return root;
+	}
+	
     bool insert_root(Board b)
     {
         if (root == nullptr)
@@ -87,18 +96,10 @@ public:
 
     void generate_layer(Side player_side, Node *current)
     {
-        Node *current_node = current; 
-        if (current_node->next_moves.size() != 0)
-        {
-            for (unsigned int i = 0; i < next_moves.size(); i++)
-            {
-                generate_layer(player_side, current_node);
-            }
-        }
 
-        if (current_node->next_moves.size() == 0)
+        if (current->next_moves.size() == 0)
         {
-            current_node.generate_next(player_side);
+            current->generate_next(player_side);
         }
     }
 

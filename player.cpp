@@ -61,7 +61,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
         Board *new_board;
         new_board = board.copy();
         DecisionTree tree;
-        tree.insert_root(*new_board);
+        tree.insert_root(*new_board, nullptr);
 		tree.generate_layer(player_side, tree.get_root());
 		for(unsigned int i= 0; i < tree.get_root()->next_moves.size(); i++)
 		{ 	

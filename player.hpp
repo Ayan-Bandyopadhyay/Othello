@@ -12,8 +12,10 @@ struct Node
     Board board_state;
     int score;
     vector<Node *> next_moves;
-    Node(Board b)
+    Move *move;
+    Node(Board b, Move * m)
     {
+		move = m;
         score = -9999999;
         board_state = b;
         next_moves = vector<Node *>();
@@ -23,9 +25,10 @@ struct Node
     Does not allow duplicate entries.
     @return whether or not the entry was successfully inserted.
     */
-    bool insert(Board b)
+    
+    bool insert(Board b, Move * m)
     {
-        Node * n = new Node(b);
+        Node * n = new Node(b, m);
         next_moves.push_back(n);
         return true;
     }
@@ -46,7 +49,7 @@ struct Node
 					
 					Board *b = new_board->copy();
 					b->doMove( m, player_side);
-					Node *node = new Node(*b);
+					Node *node = new Node(*b, m);
 					next_moves.push_back(node);
 				}
 				else
@@ -85,18 +88,16 @@ public:
 		return root;
 	}
 	
-    bool insert_root(Board b)
+    bool insert_root(Board b, Move * m)
     {
         if (root == nullptr)
         {
-            root = new Node(b);
+            root = new Node(b , m);
         }
-        
     }
 
     void generate_layer(Side player_side, Node *current)
     {
-
         if (current->next_moves.size() == 0)
         {
             current->generate_next(player_side);

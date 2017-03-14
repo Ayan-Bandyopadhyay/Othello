@@ -7,44 +7,11 @@
 #include <vector>
 using namespace std;
 
-class Player {
-
-public:
-    Player(Side side);
-    ~Player();
-
-    Move *doMove(Move *opponentsMove, int msLeft);
-
-    // Flag to tell if the player is running within the test_minimax context
-    bool testingMinimax;
-    
-private:
-	Board board;
-	Side opponent_side;
-	Side player_side;
-	int get_score( Move * m);
-	
-};
-    
-	/** @brief Inserts an integer into the subtree rooted at this node.
-
-    Does not allow duplicate entries.
-
-    @return whether or not the entry was successfully inserted.
-
-    */
-    bool insert(Board b)
-    {
-		next_moves.push_back( Node(b));
-
-    }
-};
-
 struct Node
 {
 	Board board_state;
 	int score;
-	vector<Node> next_moves;
+	vector<Node *> next_moves;
 	Node(Board b)
 	{
 		score = -9999999;
@@ -58,7 +25,9 @@ struct Node
 	*/
 	bool insert(Board b)
 	{
-		next_moves.push_back( Node(b));
+		Node * n = new Node(b);
+		next_moves.push_back(n);
+		return true;
 	}
 };
 
@@ -85,14 +54,9 @@ public:
 		{
 			root = new Node(b);
 		}
-        return root->insert(val);
+        return root->insert(b);
     }
 
-     /** @brief Finds an integer in this tree.
-
-    @return whether or not the entry exists in this tree.
-
-    */
     void Deleter(Node * current)
     {
 		if (current == nullptr)
@@ -109,12 +73,12 @@ public:
 			
 			vector<Node *> vec = vector<Node *>();
 			
-			for(int i = 0 ; i < current->next_moves.size(); i++)
+			for(unsigned int i = 0 ; i < current->next_moves.size(); i++)
 			{
 				vec.push_back( current->next_moves.size() );
 			}
 			
-			for(int i = 0 ; i < vec.size(); i++)
+			for(unsigned int i = 0 ; i < vec.size(); i++)
 			{
 				Deleter(vec[i]);
 			}
@@ -125,4 +89,27 @@ public:
 		Deleter(root);
 	}
 };
+
+class Player {
+
+public:
+    Player(Side side);
+    ~Player();
+
+    Move *doMove(Move *opponentsMove, int msLeft);
+
+    // Flag to tell if the player is running within the test_minimax context
+    bool testingMinimax;
+    
+private:
+	Board board;
+	Side opponent_side;
+	Side player_side;
+	int get_score( Move * m);
+	
+};
+    
+
+
+
 #endif

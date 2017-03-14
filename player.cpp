@@ -82,10 +82,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     }
     
 
+	/**
     if (!board.hasMoves(player_side))
     {
         m = nullptr;
-    }
+    }*/
     
     for (unsigned int i = 0; i < possible_moves.size(); i++)
     {

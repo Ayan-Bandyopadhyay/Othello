@@ -75,7 +75,7 @@ public:
 			
 			for(unsigned int i = 0 ; i < current->next_moves.size(); i++)
 			{
-				vec.push_back( current->next_moves.size() );
+				vec.push_back( current->next_moves[i] );
 			}
 			
 			for(unsigned int i = 0 ; i < vec.size(); i++)

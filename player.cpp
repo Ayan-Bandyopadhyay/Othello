@@ -47,62 +47,77 @@ Player::~Player() {
  * The move returned must be legal; if there are no valid moves for your side,
  * return nullptr.
  */
-Move *Player::doMove(Move *opponentsMove, int msLeft) {
+Move *Player::doMove(Move *opponentsMove, int msLeft) 
+{
     /*
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
+    if (testingMinimax)
+    {
+        // Constructing the tree.
+        Board *new_board;
+        new_board = board.copy();
+        DecisionTree tree;
+        tree.insert_root(*new_board);
 
-    if ( opponentsMove != nullptr)
-    {
-        board.doMove( opponentsMove, opponent_side);
+        
+
+
     }
-    
-    Move *m;
-    vector<Move*> possible_moves;
-    int score = -88888;
-    int new_score = -99999;
-    Move *best_move = new Move(1, 1);
-    
-    
-    for (int i = 0; i < 8; i++) 
+
+    else
     {
-        for (int j = 0; j < 8; j++) 
+        if ( opponentsMove != nullptr)
         {
-            m = new Move(i, j);
-            if (board.checkMove(m, player_side))
+            board.doMove( opponentsMove, opponent_side);
+        }
+        
+        Move *m;
+        vector<Move*> possible_moves;
+        int score = -88888;
+        int new_score = -99999;
+        Move *best_move = new Move(1, 1);
+        
+        
+        for (int i = 0; i < 8; i++) 
+        {
+            for (int j = 0; j < 8; j++) 
             {
-                possible_moves.push_back(m);
-            }
-            else
-            {
-                delete m;
+                m = new Move(i, j);
+                if (board.checkMove(m, player_side))
+                {
+                    possible_moves.push_back(m);
+                }
+                else
+                {
+                    delete m;
+                }
             }
         }
-    }
-    
+        
 
-	/**
-    if (!board.hasMoves(player_side))
-    {
-        m = nullptr;
-    }*/
-    
-    for (unsigned int i = 0; i < possible_moves.size(); i++)
-    {
-        new_score = Player::get_score( possible_moves[i]);
-        if (new_score >= score)
+        /**
+        if (!board.hasMoves(player_side))
         {
-            score = new_score;
-            best_move = possible_moves[i];
+            m = nullptr;
+        }*/
+        
+        for (unsigned int i = 0; i < possible_moves.size(); i++)
+        {
+            new_score = Player::get_score( possible_moves[i]);
+            if (new_score >= score)
+            {
+                score = new_score;
+                best_move = possible_moves[i];
+            }
+
+
         }
 
-
-    }
-
-    board.doMove(best_move, player_side);
-    return best_move;
-    
+        board.doMove(best_move, player_side);
+        return best_move; 
+    }   
 }
 
 int Player::get_score( Move * m )

@@ -106,10 +106,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     
     
     /**
-=======
+
     // if (testingMinimax)
     // {
->>>>>>> 53d1ecea131abf46bf34c0f7bad46bc96b2ecc01
+
         std::cerr << "test_minimax" << std::endl;
         // Constructing the tree.
         Board *new_board;
@@ -154,7 +154,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
         }
         board.doMove(max->move, player_side);
         return max->move;
-<<<<<<< HEAD
+
     
     */
     

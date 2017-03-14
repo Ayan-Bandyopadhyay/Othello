@@ -67,7 +67,7 @@ class DecisionTree
 private:
     Node * root;
 public:
-    BinarySearchTree()
+    DecisionTree()
     {
         root = nullptr;
     }
@@ -120,7 +120,7 @@ public:
 			}
 		}
 	}
-    ~BinarySearchTree()
+    ~DecisionTree()
     {
 		Deleter(root);
 	}

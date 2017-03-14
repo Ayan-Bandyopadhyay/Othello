@@ -138,6 +138,11 @@ public:
     }
 };
 
+
+
+
+
+
 class Player {
 
 public:
@@ -145,21 +150,20 @@ public:
     ~Player();
 
     Move *doMove(Move *opponentsMove, int msLeft);
-    Node * alphabeta(Node *node, Node * best_node, int level, int alpha, int beta, 
-        bool maximizing, Side player_side, Side opponent_side);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
     
 private:
-    Board board;
-    Side opponent_side;
-    Side player_side;
-    int get_score(Move * m);
-    
+	Board board;
+	Side opponent_side;
+	Side player_side;
+	int get_score( Move * m);
+	Node * alphabeta(Node *node, Node* best_node, int level, int alpha, int beta, 
+    bool maximizing, Side player_side, Side opponent_side);
 };
-    
-
-
 
 #endif
+
+
+

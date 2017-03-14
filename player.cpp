@@ -55,88 +55,124 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
      * TODO: Implement how moves your AI should play here. You should first
      * process the opponent's opponents move before calculating your own move
      */
-    if (testingMinimax)
-    {
+    // if (testingMinimax)
+    // {
+        std::cerr << "test_minimax" << std::endl;
         // Constructing the tree.
         Board *new_board;
         new_board = board.copy();
         DecisionTree tree;
-        tree.insert_root(*new_board);
 
         tree.insert_root(*new_board, nullptr);
 
-		tree.generate_layer(player_side, tree.get_root());
-		for(unsigned int i= 0; i < tree.get_root()->next_moves.size(); i++)
-		{ 	
-			tree.generate_layer(opponent_side, tree.get_root()->next_moves[i]);
-		}
-        
+        tree.generate_layer(player_side, player_side, opponent_side, 
+            tree.get_root());
 
-
-
-    }
-
-    else
-    {
-        if ( opponentsMove != nullptr)
-        {
-            board.doMove( opponentsMove, opponent_side);
+        for (unsigned int i = 0; i < tree.get_root()->next_moves.size(); i++)
+        {   
+            tree.generate_layer(opponent_side, player_side, opponent_side,
+                                     tree.get_root()->next_moves[i]);
         }
         
-        Move *m;
-        vector<Move*> possible_moves;
-        int score = -88888;
-        int new_score = -99999;
-        Move *best_move = new Move(1, 1);
-        
-        
-        for (int i = 0; i < 8; i++) 
-        {
-            for (int j = 0; j < 8; j++) 
+        std::cerr << "size of root()->next_moves" << tree.get_root()->next_moves.size() 
+                    << std::endl;
+        for (unsigned int i = 0; i < tree.get_root()->next_moves.size(); i++)
+        {   
+
+            Node * n = tree.get_root()->next_moves[i];
+            n->score = n->next_moves[0]->score;
+            for (unsigned int j = 0; j < n->next_moves.size(); j++ )
             {
-                m = new Move(i, j);
-                if (board.checkMove(m, player_side))
+                if(n->next_moves[j]->score < n->score)
                 {
-                    possible_moves.push_back(m);
-                }
-                else
-                {
-                    delete m;
+                    n->score = n->next_moves[j]->score;
                 }
             }
         }
-        
 
-        /**
-        if (!board.hasMoves(player_side))
+        Node * max = tree.get_root()->next_moves[0];
+        for(unsigned int i = 0; i < tree.get_root()->next_moves.size(); i++)
         {
-            m = nullptr;
-        }*/
-        
-        for (unsigned int i = 0; i < possible_moves.size(); i++)
-        {
-            new_score = Player::get_score( possible_moves[i]);
-            if (new_score >= score)
+            if(tree.get_root()->next_moves[i]->score > max->score)
             {
-                score = new_score;
-                best_move = possible_moves[i];
+                max = tree.get_root()->next_moves[i];
+                std::cerr << "i = " << i <<std::endl;
             }
-
-
         }
+        board.doMove(max->move, player_side);
+        return max->move;
+        //return new Move(1,1);
 
-        board.doMove(best_move, player_side);
-        return best_move; 
-    }   
+    // }
+
+    // else
+    // {
+    //     std::cerr << "normal" << std::endl;
+    //     if ( opponentsMove != nullptr)
+    //     {
+    //         board.doMove( opponentsMove, opponent_side);
+    //     }
+        
+    //     Move *m;
+    //     vector<Move*> possible_moves;
+    //     int score = -88888;
+    //     int new_score = -99999;
+    //     Move *best_move = new Move(1, 1);
+        
+        
+    //     for (int i = 0; i < 8; i++) 
+    //     {
+    //         for (int j = 0; j < 8; j++) 
+    //         {
+    //             m = new Move(i, j);
+    //             if (board.checkMove(m, player_side))
+    //             {
+    //                 possible_moves.push_back(m);
+    //             }
+    //             else
+    //             {
+    //                 delete m;
+    //             }
+    //         }
+    //     }
+        
+
+    //     /**
+    //     if (!board.hasMoves(player_side))
+    //     {
+    //         m = nullptr;
+    //     }*/
+        
+    //     for (unsigned int i = 0; i < possible_moves.size(); i++)
+    //     {
+    //         new_score = Player::get_score( possible_moves[i]);
+    //         if (new_score >= score)
+    //         {
+    //             score = new_score;
+    //             best_move = possible_moves[i];
+    //         }
+
+
+    //     }
+
+    //     board.doMove(best_move, player_side);
+    //     return best_move; 
+    // }   
 }
 
-int Player::alphabeta(Node *node, int level, int alpha, int beta, 
+Node * Player::alphabeta(Node *node, Node* best_node, int level, int alpha, int beta, 
     bool maximizing, Side player_side, Side opponent_side)
 {
+    /**
     int best_value;
     if (node->next_moves.size() == 0)
     {
-        return node->board_state.count(player_side, opponent_side);
+
+        return node->board_state.count(player_side) 
+            - node->board_state.count(opponent_side);
+        
+
+        return node;
     }
 
     if (maximizing)
@@ -146,7 +182,8 @@ int Player::alphabeta(Node *node, int level, int alpha, int beta,
         {
             best_value = std::max(best_value, 
                 Player::alphabeta(node->next_moves[i], level - 1, alpha, beta, 
-                    false));
+                    false, player_side, opponent_side));
+            best_node = node->next_moves[i];
             alpha = std::max(alpha, best_value);
 
             if (beta <= alpha)
@@ -156,7 +193,7 @@ int Player::alphabeta(Node *node, int level, int alpha, int beta,
 
         }
 
-        return best_value;   
+        return best_node;   
     }
 
     else
@@ -165,45 +202,48 @@ int Player::alphabeta(Node *node, int level, int alpha, int beta,
 
         for (unsigned int i = 0; i <  node->next_moves.size(); i++)
         {
-            best_value = std::min(best_value, alphabeta(node->next_moves[i], 
-                level - 1, alpha, beta, true));
+            best_value = std::min(best_value, 
+                Player::alphabeta(node->next_moves[i], 
+                level - 1, alpha, beta, true, player_side, opponent_side));
+            best_node = node->next_moves[i];
             beta = std::min(beta, best_value);
+
+            if (beta <= alpha)
+            {
+                break;
+            }
+
         }
 
-        if (beta <= alpha)
-        {
-            break;
-        }
-
-        return best_value;
-    }
+        return best_node;
+    }*/
 }
 
 int Player::get_score( Move * m )
 {
-	Board *new_board;
-	new_board = board.copy();
+    Board *new_board;
+    new_board = board.copy();
     new_board->doMove(m, player_side);
     int score = new_board->count(player_side) 
             - new_board->count(opponent_side);
-	if ((m->getX() == 7 && m->getY() == 7) ||
-		(m->getX() == 0 && m->getY() == 0) ||
-		(m->getX() == 0 && m->getY() == 7) ||
-		(m->getX() == 7 && m->getY() == 0)  )
-	{
-		score *= 3;
-	}
+    if ((m->getX() == 7 && m->getY() == 7) ||
+        (m->getX() == 0 && m->getY() == 0) ||
+        (m->getX() == 0 && m->getY() == 7) ||
+        (m->getX() == 7 && m->getY() == 0)  )
+    {
+        score *= 3;
+    }
 
-	if ((m->getX() == 7 && m->getY() == 6) ||
-		(m->getX() == 6 && m->getY() == 7) ||
-		(m->getX() == 0 && m->getY() == 1) ||
-		(m->getX() == 1 && m->getY() == 0) ||
-		(m->getX() == 6 && m->getY() == 0) ||
-		(m->getX() == 7 && m->getY() == 1) ||
-		(m->getX() == 0 && m->getY() == 6) ||
-		(m->getX() == 1 && m->getY() == 7)  )
-	{
-		score *= -3;
-	}
-	return score;
+    if ((m->getX() == 7 && m->getY() == 6) ||
+        (m->getX() == 6 && m->getY() == 7) ||
+        (m->getX() == 0 && m->getY() == 1) ||
+        (m->getX() == 1 && m->getY() == 0) ||
+        (m->getX() == 6 && m->getY() == 0) ||
+        (m->getX() == 7 && m->getY() == 1) ||
+        (m->getX() == 0 && m->getY() == 6) ||
+        (m->getX() == 1 && m->getY() == 7)  )
+    {
+        score *= -3;
+    }
+    return score;
 }

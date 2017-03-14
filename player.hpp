@@ -33,7 +33,7 @@ struct Node
         return true;
     }
 
-    bool generate_next(Side player_side)
+    bool generate_next(Side player_side, Side score_side, Side score_other_side)
     {
         Board *new_board = board_state.copy();
 
@@ -46,10 +46,11 @@ struct Node
 				m = new Move(i, j);
 				if (new_board->checkMove(m, player_side))
 				{
-					
 					Board *b = new_board->copy();
 					b->doMove( m, player_side);
 					Node *node = new Node(*b, m);
+                    node->score = node->board_state.count(score_side) 
+                              - node->board_state.count(score_other_side);
 					next_moves.push_back(node);
 				}
 				else
@@ -96,11 +97,11 @@ public:
         }
     }
 
-    void generate_layer(Side player_side, Node *current)
+    void generate_layer(Side player_side, Side score_side, Side score_other_side, Node *current)
     {
         if (current->next_moves.size() == 0)
         {
-            current->generate_next(player_side);
+            current->generate_next(player_side, score_side, score_other_side);
         }
     }
 
@@ -144,6 +145,8 @@ public:
     ~Player();
 
     Move *doMove(Move *opponentsMove, int msLeft);
+    Node * alphabeta(Node *node, Node * best_node, int level, int alpha, int beta, 
+        bool maximizing, Side player_side, Side opponent_side);
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
@@ -152,7 +155,7 @@ private:
     Board board;
     Side opponent_side;
     Side player_side;
-    int get_score( Move * m);
+    int get_score(Move * m);
     
 };
     

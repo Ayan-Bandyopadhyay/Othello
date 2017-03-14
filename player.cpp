@@ -61,7 +61,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
         DecisionTree tree;
         tree.insert_root(*new_board);
 
-        
+
 
 
     }
@@ -118,6 +118,15 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
         board.doMove(best_move, player_side);
         return best_move; 
     }   
+}
+
+int Player::alphabeta(Node *node, int alpha, int beta, 
+    bool maximizing)
+{
+    if (node->next_moves.size() == 0)
+    {
+
+    }
 }
 
 int Player::get_score( Move * m )

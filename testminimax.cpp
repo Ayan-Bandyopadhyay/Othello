@@ -12,14 +12,15 @@ int main(int argc, char *argv[]) {
     char boardData[64] = {
         ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-        ' ', 'b', ' ', ' ', ' ', ' ', ' ', ' ',
-        'b', 'w', 'b', 'b', 'b', 'b', ' ', ' ',
-        ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
+        ' ', ' ', 'w', 'b', ' ', ' ', ' ', ' ',
+        ' ', ' ', 'b', 'b', 'b', ' ', ' ', ' ',
+        ' ', ' ', ' ', 'b', 'w', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
         ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '
     };
     Board *board = new Board();
+    Move *m = new Move(1, 1);
     board->setBoard(boardData);
 
     // Initialize player as the white player, and set testing_minimax flag.
@@ -31,17 +32,20 @@ int main(int argc, char *argv[]) {
      * TODO: Write code to set your player's internal board state to the
      * example state.
      */
+    player->set_board(board);
 
     // Get player's move and check if it's right.
     Move *move = player->doMove(nullptr, 0);
 
     if (move != nullptr && move->x == 1 && move->y == 1) {
-        std::cout << "Correct move: (1, 1)" << std::endl;;
-    } else {
+        std::cout << "PASS. Correct move: (1, 1)" << std::endl;;
+    } 
+    else {
         std::cout << "Wrong move: got ";
         if (move == nullptr) {
             std::cout << "PASS";
-        } else {
+        } 
+        else {
             std::cout << "(" << move->x << ", " << move->y << ")";
         }
         std::cout << ", expected (1, 1)" << std::endl;

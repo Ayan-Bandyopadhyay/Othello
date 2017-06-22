@@ -162,6 +162,23 @@ int Board::countWhite() {
     return taken.count() - black.count();
 }
 
+vector<Move *> Board::possible_moves(Side side) {
+    vector<Move *> possible_moves;
+    Move *m;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            m = new Move(i, j);
+            if (checkMove(m, side)) {
+                possible_moves.push_back(m);
+            }
+            else {
+                delete m;
+            }
+        }
+    }
+    return possible_moves;
+}
+
 /*
  * Sets the board state given an 8x8 char array where 'w' indicates a white
  * piece and 'b' indicates a black piece. Mainly for testing purposes.

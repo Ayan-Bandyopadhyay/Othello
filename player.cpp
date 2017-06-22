@@ -1,7 +1,4 @@
 #include "player.hpp"
-/**
- * small change to the player.cpp file
- */
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -35,6 +32,56 @@ Player::Player(Side side) {
 Player::~Player() {
 }
 
+int Player::minimax(Board *board_node, int depth, Side side) 
+{   
+    Board *new_board;
+    int best_value, v;
+
+    if (depth == 0 || !board_node->hasMoves(side)) {
+        int player_stones = board_node->count(player_side);
+        int opponent_stones = board_node->count(opponent_side);
+        return player_stones - opponent_stones;
+    }
+
+    vector<Move *> possible_moves;
+    Move *m;
+    for (int i = 0; i < 8; i++) 
+    {
+        for (int j = 0; j < 8; j++) 
+        {
+            m = new Move(i, j);
+            if (board_node->checkMove(m, player_side))
+            {
+                possible_moves.push_back(m);
+            }
+            else
+            {
+                delete m;
+            }
+        }
+    }
+
+    if (side != player_side) {
+        int best_value = -999999;
+        for (unsigned int i = 0; i < possible_moves.size(); i++) {
+            new_board = board_node->copy();
+            new_board->doMove(possible_moves[i], side);
+            v = minimax(new_board, depth - 1, opponent_side);
+            best_value = max(best_value, v);
+        }
+    }
+    else {
+        best_value = 999999;
+        for (unsigned int i = 0; i < possible_moves.size(); i++) {
+            new_board = board_node->copy();
+            new_board->doMove(possible_moves[i], side);
+            v = minimax(new_board, depth - 1, opponent_side);
+            best_value = max(best_value, v);
+        }
+    }
+    return best_value;
+}
+
 /*
  * Compute the next move given the opponent's last move. Your AI is
  * expected to keep track of the board on its own. If this is the first move,
@@ -51,8 +98,55 @@ Player::~Player() {
 
 Move *Player::doMove(Move *opponentsMove, int msLeft) 
 {
+    /* Make the opponent's move. */
+    if (opponentsMove != nullptr) {
+        board.doMove(opponentsMove, opponent_side);
+    }
 
+    /* Find all of the possible moves for the player. */
+    vector<Move *> possible_moves;
+    Move *m;
+    for (int i = 0; i < 8; i++) 
+    {
+        for (int j = 0; j < 8; j++) 
+        {
+            m = new Move(i, j);
+            if (board.checkMove(m, player_side))
+            {
+                possible_moves.push_back(m);
+            }
+            else
+            {
+                delete m;
+            }
+        }
+    }
 
+    int result;
+    int best_result;
+    Board *new_board;
+    Move *best_move;
+
+    new_board = board.copy();
+    new_board->doMove(possible_moves[0], player_side);
+    best_result = minimax(new_board, 2, player_side);
+    best_move = possible_moves[0];
+
+    for (unsigned int i = 1; i < possible_moves.size(); i++) {
+        new_board = board.copy();
+        new_board->doMove(possible_moves[i], player_side);
+        result = minimax(new_board, 2, player_side);
+        if (result > best_result) {
+            best_result = result;
+            best_move = possible_moves[i];
+        }
+    }
+
+    board.doMove(best_move, player_side);
+
+    return best_move;
+    
+/*
     if ( opponentsMove != nullptr)
     {
         board.doMove( opponentsMove, opponent_side);
@@ -103,7 +197,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     board.doMove(best_move, player_side);
     return best_move;
     
-    
+    */
     
     /**
 
@@ -160,9 +254,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft)
     
 }
 
-int Player::get_score( Move * m )
+int Player::get_score(Move * m)
 {
-	Board *new_board;
+	/*Board *new_board;
 	new_board = board.copy();
     new_board->doMove(m, player_side);
     
@@ -222,66 +316,9 @@ int Player::get_score( Move * m )
 		delete next_board;
 	}
 	delete new_board;
-	return final_score;
+	return final_score;*/
 }
 
-Node * Player::alphabeta(Node *node, Node* best_node, int level, int alpha, int beta, 
-    bool maximizing, Side player_side, Side opponent_side)
-{
-    /**
-    int best_value;
-    if (node->next_moves.size() == 0)
-    {
-
-        return node->board_state.count(player_side) 
-            - node->board_state.count(opponent_side);
-        
-
-        return node;
-    }
-
-    if (maximizing)
-    {
-        best_value = -99999;
-        for (unsigned int i = 0; i < node->next_moves.size(); i++)
-        {
-            best_value = std::max(best_value, 
-                Player::alphabeta(node->next_moves[i], level - 1, alpha, beta, 
-                    false, player_side, opponent_side));
-            best_node = node->next_moves[i];
-            alpha = std::max(alpha, best_value);
-
-            if (beta <= alpha)
-            {
-                break;
-            }
-
-        }
-
-        return best_node;   
-    }
-
-    else
-    {
-        best_value = 99999;
-
-        for (unsigned int i = 0; i <  node->next_moves.size(); i++)
-        {
-            best_value = std::min(best_value, 
-                Player::alphabeta(node->next_moves[i], 
-                level - 1, alpha, beta, true, player_side, opponent_side));
-            best_node = node->next_moves[i];
-            beta = std::min(beta, best_value);
-
-            if (beta <= alpha)
-            {
-                break;
-            }
-
-        }
-
-        return best_node;
-    }*/
+void Player::set_board(Board *new_board) {
+    board = *new_board;
 }
-
-
